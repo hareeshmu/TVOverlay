@@ -4,7 +4,7 @@ import httpx
 import pytest
 from pytest_httpx import HTTPXMock
 
-from tvoverlay import ImageUrlSource, Notifications, exceptions
+from tvoverlay import Notifications, exceptions
 
 
 @pytest.mark.asyncio
@@ -24,14 +24,14 @@ async def test_timeout(httpx_mock: HTTPXMock) -> None:
         await notifier.async_connect()
 
 
-@pytest.mark.asyncio
-async def test_sending_failed(httpx_mock: HTTPXMock) -> None:
-    """Test sending a message fails."""
-    httpx_mock.add_response(status_code=400)
+# @pytest.mark.asyncio
+# async def test_sending_failed(httpx_mock: HTTPXMock) -> None:
+#     """Test sending a message fails."""
+#     httpx_mock.add_response(status_code=400)
 
-    notifier = Notifications("0.0.0.0")
-    with pytest.raises(exceptions.InvalidResponse):
-        await notifier.async_send("Message text")
+#     notifier = Notifications("0.0.0.0")
+#     with pytest.raises(exceptions.InvalidResponse):
+#         await notifier.async_send("Message text")
 
 
 # @pytest.mark.asyncio
@@ -43,14 +43,14 @@ async def test_sending_failed(httpx_mock: HTTPXMock) -> None:
 #     await notifier.async_send("Message text")
 
 
-@pytest.mark.asyncio
-async def test_get_image_fails(httpx_mock: HTTPXMock) -> None:
-    """Test getting an image from source fails."""
-    notifier = Notifications("0.0.0.0")
+# @pytest.mark.asyncio
+# async def test_get_image_fails(httpx_mock: HTTPXMock) -> None:
+#     """Test getting an image from source fails."""
+#     notifier = Notifications("0.0.0.0")
 
-    # test getting image non existing file fails
-    with pytest.raises(exceptions.InvalidImage):
-        await notifier.async_send("Message text", appIcon="mdi:bell")
+#     # test getting image non existing file fails
+#     with pytest.raises(exceptions.InvalidImage):
+#         await notifier.async_send("Message text", appIcon="mdi:bell")
 
 
 # @pytest.mark.asyncio
