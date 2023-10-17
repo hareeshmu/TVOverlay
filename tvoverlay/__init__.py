@@ -7,9 +7,18 @@ from typing import Any
 
 import httpx
 
-from .const import (DEFAULT_APP_ICON, DEFAULT_APP_TITLE, DEFAULT_COLOR,
-                    DEFAULT_LARGE_ICON, DEFAULT_SMALL_ICON, DEFAULT_TITLE,
-                    Positions, Shapes)
+from .const import (
+    DEFAULT_APP_ICON, 
+    DEFAULT_APP_TITLE, 
+    DEFAULT_COLOR,
+    DEFAULT_LARGE_ICON, 
+    DEFAULT_SMALL_ICON, 
+    DEFAULT_TITLE, 
+    DEFAULT_DURATION,
+    Positions, 
+    Shapes
+)
+
 from .exceptions import ConnectError, InvalidResponse
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,7 +87,7 @@ class Notifications:
         smallIcon: str = DEFAULT_SMALL_ICON,
         largeIcon: str = DEFAULT_LARGE_ICON,
         corner: Positions = Positions.TOP_RIGHT,
-        seconds: int = 5,
+        seconds: int = DEFAULT_DURATION,
     ) -> str:
         """Send notification with parameters.
 

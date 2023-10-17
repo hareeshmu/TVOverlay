@@ -9,6 +9,7 @@ DEFAULT_APP_ICON: Final = "mdi:bell"
 DEFAULT_SMALL_ICON: Final = "mdi:bell"
 DEFAULT_LARGE_ICON: Final = "mdi:home-assistant"
 DEFAULT_COLOR: Final = "#049cdb"
+DEFAULT_DURATION: Final = 5
 
 
 class Positions(Enum):
