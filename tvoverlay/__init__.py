@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 from typing import Any
 
@@ -10,7 +11,7 @@ import httpx
 from .const import (
     DEFAULT_APP_ICON,
     DEFAULT_APP_TITLE,
-    DEFAULT_COLOR,
+    COLOR_BLUE,
     DEFAULT_DURATION,
     DEFAULT_LARGE_ICON,
     DEFAULT_SMALL_ICON,
@@ -18,35 +19,12 @@ from .const import (
     Positions,
     Shapes,
 )
-from .exceptions import ConnectError, InvalidResponse
+
+from .exceptions import ConnectError, InvalidResponse, InvalidImage
 
 _LOGGER = logging.getLogger(__name__)
 
-
-class ImageUrlSource:
-    """Image source from url or local path."""
-
-    def __init__(
-        self,
-        url: str,
-        username: str | None = None,
-        password: str | None = None,
-        auth: str | None = None,
-    ) -> None:
-        """Initiate image source class."""
-        self.url = url
-        self.auth: httpx.BasicAuth | httpx.DigestAuth | None = None
-
-        if auth:
-            if auth not in ["basic", "disgest"]:
-                raise ValueError("authentication must be 'basic' or 'digest'")
-            if username is None or password is None:
-                raise ValueError("username and password must be specified")
-            if auth == "basic":
-                self.auth = httpx.BasicAuth(username, password)
-            else:
-                self.auth = httpx.DigestAuth(username, password)
-
+_ALLOWED_IMAGES = ["image/gif", "image/jpeg", "image/png"]
 
 class Notifications:
     """Notifications class for TVOverlay."""
@@ -61,26 +39,20 @@ class Notifications:
         self.url = f"http://{host}:{port}"
         self.httpx_client = httpx_client
 
-        self.DEFAULT_APP_ICON = DEFAULT_APP_ICON
-        self.DEFAULT_APP_TITLE = DEFAULT_APP_TITLE
-        self.DEFAULT_COLOR = DEFAULT_COLOR
-        self.DEFAULT_LARGE_ICON = DEFAULT_LARGE_ICON
-        self.DEFAULT_SMALL_ICON = DEFAULT_SMALL_ICON
-        self.DEFAULT_TITLE = DEFAULT_TITLE
-        self.DEFAULT_DURATION = DEFAULT_DURATION
-        self.Positions = Positions
-        self.Shapes = Shapes
-
-    async def async_connect(self) -> None:
+    async def async_connect(self) -> str:
         """Test connecting to server."""
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
         )
         try:
             async with httpx_client as client:
-                await client.get(self.url + "/get", timeout=5)
+                response = await client.get(self.url + "/get", timeout=5)
         except (httpx.ConnectError, httpx.TimeoutException) as err:
-            raise ConnectError(f"Connection to {self.url} failed") from err
+            raise ConnectError(f"Connection to host: {self.url} failed!") from err
+        if response.status_code == httpx.codes.OK:
+            return response.json()
+        else:
+            raise InvalidResponse(f"Error connecting host: {self.url}")
 
     async def async_send(
         self,
@@ -89,8 +61,8 @@ class Notifications:
         id: str | None = None,
         appTitle: str = DEFAULT_APP_TITLE,
         appIcon: str = DEFAULT_APP_ICON,
-        color: str = DEFAULT_COLOR,
-        image: str | None = None,
+        color: str = COLOR_BLUE,
+        image: ImageUrlSource | str | None = None,
         smallIcon: str = DEFAULT_SMALL_ICON,
         largeIcon: str = DEFAULT_LARGE_ICON,
         corner: Positions = Positions.TOP_RIGHT,
@@ -109,7 +81,6 @@ class Notifications:
         :param largeIcon: (Optional) Accepts mdi icons, image urls and Bitmap encoded to Base64.
         :param corner: (Optional) Notification Position values: bottom_start, bottom_end, top_start, top_end.
         :param seconds: (Optional) Display the notification for the specified period in seconds.
-
         Usage:
         >>> from tvoverlay import Notifications
         >>> notifier = Notifications("192.168.1.100")
@@ -127,6 +98,11 @@ class Notifications:
                 "seconds": 20
             )
         """
+        if image:
+            image_b64 = await self._async_get_b64_image(image)
+        else:
+            image_b64 = None
+
         data: dict[str, Any] = {
             "message": message,
             "title": title,
@@ -134,7 +110,7 @@ class Notifications:
             "appTitle": appTitle,
             "appIcon": appIcon,
             "color": color,
-            "image": image,
+            "image": image_b64,
             "smallIcon": smallIcon,
             "largeIcon": largeIcon,
             "corner": corner.value,
@@ -156,14 +132,14 @@ class Notifications:
                 response = await client.post(
                     self.url + "/notify", json=data, headers=headers, timeout=5
                 )
-            # response.raise_for_status()
-            # json_response = response.json()
+            response.raise_for_status()
+            json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(
                 f"Error sending notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
-            return "Success"
+            return json_response
         else:
             raise InvalidResponse(f"Error sending notification: {response}")
 
@@ -237,13 +213,80 @@ class Notifications:
                 response = await client.post(
                     self.url + "/notify_fixed", json=data, headers=headers, timeout=5
                 )
-            # response.raise_for_status()
-            # json_response = response.json()
+            response.raise_for_status()
+            json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(
                 f"Error sending fixed notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
-            return "Success"
+            return json_response
         else:
             raise InvalidResponse(f"Error sending fixed notification: {response}")
+
+    async def _async_get_b64_image(self, image_source: ImageUrlSource | str) -> Any | bytes | None:
+        """Load file from path or url."""
+        httpx_client: httpx.AsyncClient = (
+            self.httpx_client if self.httpx_client else httpx.AsyncClient()
+        )
+        if isinstance(image_source, ImageUrlSource):
+            try:
+                async with httpx_client as client:
+                    response = await client.get(
+                        image_source.url, auth=image_source.auth, timeout=10, follow_redirects=True
+                    )
+            except (httpx.ConnectError, httpx.TimeoutException) as err:
+                raise InvalidImage(
+                    f"Error fetching image from {image_source.url}: {err}"
+                ) from err
+            if response.status_code != httpx.codes.OK:
+                raise InvalidImage(
+                    f"Error fetching image from {image_source.url}: {response}"
+                )
+            if "image" not in response.headers["content-type"]:
+                raise InvalidImage(
+                    f"Response content type is not an image: {response.headers['content-type']}"
+                )
+            return await self._get_base64(response.content)
+        elif (image_source.startswith("mdi:")):
+            return image_source
+        else:
+            try:
+                if image_source.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+                    with open(image_source, "rb") as file:
+                        image = file.read()
+                    return await self._get_base64(image)
+                else:
+                    raise InvalidImage("Invalid Image")
+            except FileNotFoundError as err:
+                raise InvalidImage(err) from err
+
+    async def _get_base64(self, filebyte: bytes) -> str | None:
+        """Convert the image to the expected base64 string."""
+        base64_image = base64.b64encode(filebyte).decode("utf8")
+        return base64_image
+
+
+class ImageUrlSource:
+    """Image source from url or local path."""
+
+    def __init__(
+        self,
+        url: str,
+        username: str | None = None,
+        password: str | None = None,
+        auth: str | None = None,
+    ) -> None:
+        """Initiate image source class."""
+        self.url = url
+        self.auth: httpx.BasicAuth | httpx.DigestAuth | None = None
+
+        if auth:
+            if auth not in ["basic", "disgest"]:
+                raise ValueError("authentication must be 'basic' or 'digest'")
+            if username is None or password is None:
+                raise ValueError("username and password must be specified")
+            if auth == "basic":
+                self.auth = httpx.BasicAuth(username, password)
+            else:
+                self.auth = httpx.DigestAuth(username, password)

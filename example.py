@@ -1,7 +1,7 @@
 """Example scripts for sending notifications."""
 import asyncio
 
-from tvoverlay import ConnectError, Notifications, Positions, Shapes
+from tvoverlay import ConnectError, Notifications, Positions
 
 # from typing import Any
 
@@ -15,14 +15,67 @@ async def main() -> None:
 
     # validate connection
     try:
-        await notifier.async_connect()
+        response = await notifier.async_connect()
+        print(response)
     except ConnectError:
         return
 
+    print("======================")
     # Send a basic notification with message only
-    await notifier.async_send("This is a notification message")
+    print(await notifier.async_send("This is a notification message"))
+
+    print("======================")
 
     # Customize all paramters in the notification
+    # response = await notifier.async_send(
+    #     message="This is a notification message",
+    #     title="Notification Title",
+    #     id="0",
+    #     appTitle="PyTest",
+    #     appIcon="mdi:unicorn",
+    #     color="#FFC107",
+    #     image="https://picsum.photos/200/100",
+    #     smallIcon="mdi:bell",
+    #     largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT,
+    #     seconds=10,
+    # )
+
+    # print(response)
+
+    # response = await notifier.async_send(
+    #     message="This is a notification message",
+    #     title="Notification Title",
+    #     id="0",
+    #     appTitle="PyTest",
+    #     appIcon="mdi:unicorn",
+    #     color="#FFC107",
+    #     image=ImageUrlSource("https://picsum.photos/200/100"),
+    #     smallIcon="mdi:bell",
+    #     largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT,
+    #     seconds=30,
+    # )
+
+    # print(response)
+
+    # response = await notifier.async_send(
+    #     message="This is a notification message",
+    #     title="Notification Title",
+    #     id="0",
+    #     appTitle="PyTest",
+    #     appIcon="mdi:unicorn",
+    #     color="#FFC107",
+    #     image="D:\\Pictures\\codeproject.png",
+    #     smallIcon="mdi:bell",
+    #     largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT,
+    #     seconds=30,
+    # )
+
+    # print(response)
+
+
     response = await notifier.async_send(
         message="This is a notification message",
         title="Notification Title",
@@ -30,29 +83,29 @@ async def main() -> None:
         appTitle="PyTest",
         appIcon="mdi:unicorn",
         color="#FFC107",
-        image="https://picsum.photos/200/100",
+        image="mdi:home-assistant",
         smallIcon="mdi:bell",
         largeIcon="mdi:home-assistant",
         corner=Positions.BOTTOM_LEFT,
-        seconds=10,
+        seconds=30,
     )
 
     print(response)
 
-    response = await notifier.async_send_fixed(
-        message="This is a notification message",
-        id="0",
-        icon="mdi:bell",
-        textColor="#FFFFFF",
-        iconColor="#FFFFFF",
-        borderColor="#FFFFFF",
-        backgroundColor="#000000",
-        shape=Shapes.CIRCLE,
-        expiration="120s",
-        visible=True,
-    )
+    # response = await notifier.async_send_fixed(
+    #     message="This is a notification message",
+    #     id="0",
+    #     icon="mdi:bell",
+    #     textColor="#FFFFFF",
+    #     iconColor="#FFFFFF",
+    #     borderColor="#FFFFFF",
+    #     backgroundColor="#000000",
+    #     shape=Shapes.CIRCLE,
+    #     expiration="120s",
+    #     visible=True,
+    # )
 
-    print(response)
+    # print(response)
 
 
 if __name__ == "__main__":
