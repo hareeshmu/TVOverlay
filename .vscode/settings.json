@@ -1,11 +1,8 @@
 {
-  "python.linting.mypyEnabled": true,
-  "python.linting.enabled": true,
-  "cSpell.words": [
-    "concat",
-    "docstrings",
-    "isort",
-    "pydocstyle",
-    "pyupgrade"
+  "python.testing.pytestArgs": ["--no-cov"],
+  "python.testing.pytestEnabled": true,
+  "cSpell.enableFiletypes": [
+    "!python",
+    "!yaml"
   ]
 }

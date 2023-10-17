@@ -1,3 +1,4 @@
+# type: ignore
 """Tests for Notifications."""
 
 import httpx
