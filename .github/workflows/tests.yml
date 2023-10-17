@@ -10,27 +10,27 @@ env:
   DEFAULT_PYTHON: 3.11
 
 jobs:
-  # pre-commit:
-  #   name: Run pre-commit
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Check out code from GitHub
-  #       uses: actions/checkout@v3.0.2
-  #     - name: Set up Python ${{ env.DEFAULT_PYTHON }}
-  #       id: python
-  #       uses: actions/setup-python@v4.2.0
-  #       with:
-  #         python-version: ${{ env.DEFAULT_PYTHON }}
-  #     - name: Create Python virtual environment
-  #       run: |
-  #         python -m venv venv
-  #         . venv/bin/activate
-  #         pip install pre-commit==2.20.0
-  #     - name: Install pre-commit dependencies
-  #       run: |
-  #         . venv/bin/activate
-  #         pre-commit install
-  #         pre-commit run --all-files
+  pre-commit:
+    name: Run pre-commit
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v3.0.2
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        id: python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Create Python virtual environment
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install pre-commit==3.5.0
+      - name: Install pre-commit dependencies
+        run: |
+          . venv/bin/activate
+          pre-commit install
+          pre-commit run --all-files
 
   build:
     runs-on: ubuntu-latest
