@@ -27,4 +27,3 @@ class Shapes(Enum):
     CIRCLE = "circle"
     ROUNDED = "rounded"
     RECTANGULAR = "rectangular"
-

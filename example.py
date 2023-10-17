@@ -1,13 +1,10 @@
 """Example scripts for sending notifications."""
 import asyncio
+
+from tvoverlay import ConnectError, Notifications, Positions, Shapes
+
 # from typing import Any
 
-from tvoverlay import (
-    ConnectError,
-    Notifications,
-    Positions,
-    Shapes,
-)
 
 HOST = "10.10.10.111"
 
@@ -41,7 +38,6 @@ async def main() -> None:
     )
 
     print(response)
-
 
     response = await notifier.async_send_fixed(
         message="This is a notification message",

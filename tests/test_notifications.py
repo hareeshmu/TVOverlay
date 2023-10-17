@@ -14,7 +14,8 @@ async def test_timeout(httpx_mock: HTTPXMock) -> None:
     def raise_timeout(request):
         """Set the timeout for the requests."""
         raise httpx.ReadTimeout(
-            f"Unable to read within {request.extensions['timeout']}", request=request
+            f"Unable to read within {request.extensions['timeout']}",
+            request=request
         )
 
     httpx_mock.add_callback(raise_timeout)
@@ -63,12 +64,14 @@ async def test_timeout(httpx_mock: HTTPXMock) -> None:
 
 #     # test missing password
 #     with pytest.raises(ValueError) as err:
-#         ImageUrlSource("http://example.com/image.png", auth="basic", username="user")
+#         ImageUrlSource("http://example.com/image.png",
+#               auth="basic", username="user")
 #         assert err == "username and password must be specified"
 
 #     # test missing username
 #     with pytest.raises(ValueError) as err:
-#         ImageUrlSource("http://example.com/image.png", auth="basic", password="pass")
+#         ImageUrlSource("http://example.com/image.png",
+#               auth="basic", password="pass")
 #         assert err == "username and password must be specified"
 
 #     # test providing image source from dict

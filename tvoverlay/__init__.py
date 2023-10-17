@@ -8,17 +8,16 @@ from typing import Any
 import httpx
 
 from .const import (
-    DEFAULT_APP_ICON, 
-    DEFAULT_APP_TITLE, 
+    DEFAULT_APP_ICON,
+    DEFAULT_APP_TITLE,
     DEFAULT_COLOR,
-    DEFAULT_LARGE_ICON, 
-    DEFAULT_SMALL_ICON, 
-    DEFAULT_TITLE, 
     DEFAULT_DURATION,
-    Positions, 
-    Shapes
+    DEFAULT_LARGE_ICON,
+    DEFAULT_SMALL_ICON,
+    DEFAULT_TITLE,
+    Positions,
+    Shapes,
 )
-
 from .exceptions import ConnectError, InvalidResponse
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,6 +61,15 @@ class Notifications:
         self.url = f"http://{host}:{port}"
         self.httpx_client = httpx_client
 
+        self.DEFAULT_APP_ICON = DEFAULT_APP_ICON
+        self.DEFAULT_APP_TITLE = DEFAULT_APP_TITLE
+        self.DEFAULT_COLOR = DEFAULT_COLOR
+        self.DEFAULT_LARGE_ICON = DEFAULT_LARGE_ICON
+        self.DEFAULT_SMALL_ICON = DEFAULT_SMALL_ICON
+        self.DEFAULT_TITLE = DEFAULT_TITLE
+        self.DEFAULT_DURATION = DEFAULT_DURATION
+        self.Positions = Positions
+        self.Shapes = Shapes
 
     async def async_connect(self) -> None:
         """Test connecting to server."""
@@ -73,7 +81,6 @@ class Notifications:
                 await client.get(self.url + "/get", timeout=5)
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(f"Connection to {self.url} failed") from err
-
 
     async def async_send(
         self,
@@ -134,7 +141,7 @@ class Notifications:
             "seconds": seconds,
         }
 
-        headers={"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json"}
 
         _LOGGER.debug("data: %s", data)
 
@@ -146,17 +153,19 @@ class Notifications:
 
         try:
             async with httpx_client as client:
-                response = await client.post(self.url + "/notify", json=data, headers=headers, timeout=5)
+                response = await client.post(
+                    self.url + "/notify", json=data, headers=headers, timeout=5
+                )
             # response.raise_for_status()
             # json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
-            raise ConnectError(f"Error sending notification to {self.url}: {err}") from err
+            raise ConnectError(
+                f"Error sending notification to {self.url}: {err}"
+            ) from err
         if response.status_code == httpx.codes.OK:
             return "Success"
         else:
             raise InvalidResponse(f"Error sending notification: {response}")
-        
-
 
     async def async_send_fixed(
         self,
@@ -213,7 +222,7 @@ class Notifications:
             "visible": visible,
         }
 
-        headers={"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json"}
 
         _LOGGER.debug("data: %s", data)
 
@@ -225,11 +234,15 @@ class Notifications:
 
         try:
             async with httpx_client as client:
-                response = await client.post(self.url + "/notify_fixed", json=data, headers=headers, timeout=5)
+                response = await client.post(
+                    self.url + "/notify_fixed", json=data, headers=headers, timeout=5
+                )
             # response.raise_for_status()
             # json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
-            raise ConnectError(f"Error sending fixed notification to {self.url}: {err}") from err
+            raise ConnectError(
+                f"Error sending fixed notification to {self.url}: {err}"
+            ) from err
         if response.status_code == httpx.codes.OK:
             return "Success"
         else:
