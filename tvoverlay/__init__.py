@@ -69,7 +69,7 @@ class Notifications:
         image: ImageUrlSource | str | None = None,
         smallIcon: str | None = DEFAULT_SMALL_ICON,
         smallIconColor: str | None = COLOR_GREEN,
-        corner: Positions = Positions.TOP_RIGHT,
+        corner: str = Positions.TOP_RIGHT.value,
         seconds: int | None = DEFAULT_DURATION,
     ) -> str:
         """Send notification with parameters.
@@ -118,7 +118,7 @@ class Notifications:
             "color": smallIconColor,
             # "largeIcon": largeIcon,
             "image": image_b64,
-            "corner": corner.value,
+            "corner": corner,
             "seconds": seconds,
         }
 

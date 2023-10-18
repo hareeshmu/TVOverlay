@@ -3,6 +3,8 @@ import asyncio
 
 from tvoverlay import ConnectError, Notifications
 
+# from tvoverlay.const import Positions, Shapes
+
 # from typing import Any
 
 
@@ -17,6 +19,9 @@ async def main() -> None:
 
 
     # print("Invalid position value. Has to be one of %s", [member.value for member in Positions])
+    # Positions.TOP_RIGHT
+    # corner = Positions.TOP_RIGHT
+    # print(corner.value)
 
     # validate connection
     try:
