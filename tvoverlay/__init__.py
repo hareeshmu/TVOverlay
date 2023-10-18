@@ -61,17 +61,16 @@ class Notifications:
     async def async_send(
         self,
         message: str,
-        id: str = str(uuid.uuid1()),
-        title: str = DEFAULT_TITLE,
-        deviceSourceName: str = DEFAULT_SOURCE_NAME,
-        appTitle: str = DEFAULT_APP_NAME,
-        appIcon: str = DEFAULT_APP_ICON,
+        id: str | None = str(uuid.uuid1()),
+        title: str | None = DEFAULT_TITLE,
+        deviceSourceName: str | None = DEFAULT_SOURCE_NAME,
+        appTitle: str | None = DEFAULT_APP_NAME,
+        appIcon: str | None = DEFAULT_APP_ICON,
         image: ImageUrlSource | str | None = None,
-        smallIcon: str = DEFAULT_SMALL_ICON,
-        smallIconColor: str = COLOR_GREEN,
-        # largeIcon: str = DEFAULT_LARGE_ICON,
+        smallIcon: str | None = DEFAULT_SMALL_ICON,
+        smallIconColor: str | None = COLOR_GREEN,
         corner: Positions = Positions.TOP_RIGHT,
-        seconds: int = DEFAULT_DURATION,
+        seconds: int | None = DEFAULT_DURATION,
     ) -> str:
         """Send notification with parameters.
 
@@ -149,14 +148,14 @@ class Notifications:
         self,
         message: str,
         id: str | None = None,
-        icon: str = DEFAULT_APP_ICON,
-        textColor: str = "#FFFFFF",
-        iconColor: str = "#FFFFFF",
-        borderColor: str = "#FFFFFF",
-        backgroundColor: str = "#000000",
+        icon: str | None = DEFAULT_APP_ICON,
+        textColor: str | None = "#FFFFFF",
+        iconColor: str | None = "#FFFFFF",
+        borderColor: str | None = "#FFFFFF",
+        backgroundColor: str | None = "#000000",
         shape: Shapes = Shapes.CIRCLE,
-        expiration: str = "5s",
-        visible: bool = True,
+        expiration: str | None = "5s",
+        visible: bool | None = True,
     ) -> str:
         """Send Fixed notification.
 
