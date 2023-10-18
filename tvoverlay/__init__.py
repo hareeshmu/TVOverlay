@@ -98,7 +98,7 @@ class Notifications:
                 "image": "https://picsum.photos/200/100",
                 "smallIcon": "mdi:bell",
                 "largeIcon": "mdi:home-assistant",
-                "corner": "bottom_end",
+                "corner": "bottom_left",
                 "seconds": 20
             )
         """
