@@ -118,7 +118,7 @@ class Notifications:
             "color": smallIconColor,
             # "largeIcon": largeIcon,
             "image": image_b64,
-            "corner": corner,
+            "corner": corner.replace("left", "start").replace("right", "end"),
             "seconds": seconds,
         }
 

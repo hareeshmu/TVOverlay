@@ -18,10 +18,10 @@ DEFAULT_DURATION: Final = 5
 class Positions(Enum):
     """Supported positions for the notification overlay."""
 
-    BOTTOM_RIGHT = "bottom_end"
-    BOTTOM_LEFT = "bottom_start"
-    TOP_RIGHT = "top_end"
-    TOP_LEFT = "top_start"
+    BOTTOM_RIGHT = "bottom_right"
+    BOTTOM_LEFT = "bottom_left"
+    TOP_RIGHT = "top_right"
+    TOP_LEFT = "top_left"
 
 
 class Shapes(Enum):
