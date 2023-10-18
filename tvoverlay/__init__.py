@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 import base64
 import logging
 from typing import Any
@@ -10,12 +11,13 @@ import httpx
 
 from .const import (
     DEFAULT_APP_ICON,
-    DEFAULT_APP_TITLE,
-    COLOR_BLUE,
+    DEFAULT_APP_NAME,
+    COLOR_GREEN,
     DEFAULT_DURATION,
-    DEFAULT_LARGE_ICON,
+    # DEFAULT_LARGE_ICON,
     DEFAULT_SMALL_ICON,
     DEFAULT_TITLE,
+    DEFAULT_SOURCE_NAME,
     Positions,
     Shapes,
 )
@@ -57,14 +59,15 @@ class Notifications:
     async def async_send(
         self,
         message: str,
+        id: str = str(uuid.uuid1()),
         title: str = DEFAULT_TITLE,
-        id: str | None = None,
-        appTitle: str = DEFAULT_APP_TITLE,
+        deviceSourceName: str = DEFAULT_SOURCE_NAME,
+        appTitle: str = DEFAULT_APP_NAME,
         appIcon: str = DEFAULT_APP_ICON,
-        color: str = COLOR_BLUE,
         image: ImageUrlSource | str | None = None,
         smallIcon: str = DEFAULT_SMALL_ICON,
-        largeIcon: str = DEFAULT_LARGE_ICON,
+        smallIconColor: str = COLOR_GREEN,
+        # largeIcon: str = DEFAULT_LARGE_ICON,
         corner: Positions = Positions.TOP_RIGHT,
         seconds: int = DEFAULT_DURATION,
     ) -> str:
@@ -104,15 +107,16 @@ class Notifications:
             image_b64 = None
 
         data: dict[str, Any] = {
-            "message": message,
-            "title": title,
             "id": id,
-            "appTitle": appTitle,
+            "title": title,
+            "message": message,
+            "deviceSourceName": deviceSourceName,
             "appIcon": appIcon,
-            "color": color,
-            "image": image_b64,
+            "appTitle": appTitle,
             "smallIcon": smallIcon,
-            "largeIcon": largeIcon,
+            "color": smallIconColor,
+            # "largeIcon": largeIcon,
+            "image": image_b64,
             "corner": corner.value,
             "seconds": seconds,
         }
@@ -120,6 +124,8 @@ class Notifications:
         headers = {"Content-Type": "application/json"}
 
         _LOGGER.debug("data: %s", data)
+
+        print(data)
 
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
