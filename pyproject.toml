@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "TVOverlay"
-version = "1.0.6"
+version = "1.0.7"
 description = "Python API for sending notifications to TVOverlay for Android TV"
 authors = ["Hareesh M U <hareesh.mu@gmail.com>"]
 maintainers = []
