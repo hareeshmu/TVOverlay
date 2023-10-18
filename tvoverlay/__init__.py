@@ -40,6 +40,7 @@ class Notifications:
         """Initialize notifier."""
         self.url = f"http://{host}:{port}"
         self.httpx_client = httpx_client
+        _LOGGER.debug("TVOverlay initialized")
 
     async def async_connect(self) -> str:
         """Test connecting to server."""
@@ -52,6 +53,7 @@ class Notifications:
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(f"Connection to host: {self.url} failed!") from err
         if response.status_code == httpx.codes.OK:
+            _LOGGER.debug("TVOverlay Connect response: %s", response.json())
             return response.json()
         else:
             raise InvalidResponse(f"Error connecting host: {self.url}")
@@ -125,8 +127,6 @@ class Notifications:
 
         _LOGGER.debug("data: %s", data)
 
-        print(data)
-
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
         )
@@ -140,6 +140,7 @@ class Notifications:
                 f"Error sending notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
+            _LOGGER.debug("TVOverlay send message response: %s", response.json())
             return response.json()
         else:
             raise InvalidResponse(f"Error sending notification: {response}")

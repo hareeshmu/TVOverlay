@@ -15,6 +15,9 @@ async def main() -> None:
     """Run the example script."""
     notifier = Notifications(HOST)
 
+
+    # print("Invalid position value. Has to be one of %s", [member.value for member in Positions])
+
     # validate connection
     try:
         response = await notifier.async_connect()
@@ -51,10 +54,10 @@ async def main() -> None:
     #     id="0",
     #     appTitle="PyTest",
     #     appIcon="mdi:unicorn",
-    #     color="#FFC107",
+    #     smallIconColor="#FFC107",
     #     image=ImageUrlSource("https://picsum.photos/200/100"),
     #     smallIcon="mdi:bell",
-    #     largeIcon="mdi:home-assistant",
+    #     # largeIcon="mdi:home-assistant",
     #     corner=Positions.BOTTOM_LEFT,
     #     seconds=30,
     # )
