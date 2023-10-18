@@ -26,23 +26,24 @@ async def test_timeout(httpx_mock: HTTPXMock) -> None:
         await notifier.async_connect()
 
 
-# @pytest.mark.asyncio
-# async def test_sending_failed(httpx_mock: HTTPXMock) -> None:
-#     """Test sending a message fails."""
-#     httpx_mock.add_response(status_code=400)
+@pytest.mark.asyncio
+async def test_sending_failed(httpx_mock: HTTPXMock) -> None:
+    """Test sending a message fails."""
+    httpx_mock.add_response(status_code=400)
 
-#     notifier = Notifications("0.0.0.0")
-#     with pytest.raises(exceptions.InvalidResponse):
-#         await notifier.async_send("Message text")
+    notifier = Notifications("0.0.0.0")
+    with pytest.raises(exceptions.InvalidResponse):
+        await notifier.async_send("Message text")
 
 
-# @pytest.mark.asyncio
-# async def test_sending_successfull(httpx_mock: HTTPXMock) -> None:
-#     """Test sending a message is successful."""
-#     httpx_mock.add_response(status_code=200)
+@pytest.mark.asyncio
+async def test_sending_successfull(httpx_mock: HTTPXMock) -> None:
+    """Test sending a message is successful."""
+    httpx_mock.add_response(status_code=200, json={'foo':'bar'})
 
-#     notifier = Notifications("0.0.0.0")
-#     await notifier.async_send("Message text")
+    notifier = Notifications("0.0.0.0")
+    response = await notifier.async_send("Message text")
+    assert response
 
 
 # @pytest.mark.asyncio

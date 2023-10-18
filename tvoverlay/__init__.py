@@ -121,25 +121,20 @@ class Notifications:
 
         _LOGGER.debug("data: %s", data)
 
-        print(data)
-
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
         )
-
         try:
             async with httpx_client as client:
                 response = await client.post(
                     self.url + "/notify", json=data, headers=headers, timeout=5
                 )
-            response.raise_for_status()
-            json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(
                 f"Error sending notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
-            return json_response
+            return response.json()
         else:
             raise InvalidResponse(f"Error sending notification: {response}")
 
@@ -202,8 +197,6 @@ class Notifications:
 
         _LOGGER.debug("data: %s", data)
 
-        print(data)
-
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
         )
@@ -213,14 +206,12 @@ class Notifications:
                 response = await client.post(
                     self.url + "/notify_fixed", json=data, headers=headers, timeout=5
                 )
-            response.raise_for_status()
-            json_response = response.json()
         except (httpx.ConnectError, httpx.TimeoutException) as err:
             raise ConnectError(
                 f"Error sending fixed notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
-            return json_response
+            return response.json()
         else:
             raise InvalidResponse(f"Error sending fixed notification: {response}")
 

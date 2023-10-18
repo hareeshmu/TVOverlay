@@ -1,12 +1,14 @@
 """Example scripts for sending notifications."""
 import asyncio
 
-from tvoverlay import ConnectError, Notifications, Positions
+from tvoverlay import ConnectError, Notifications
 
 # from typing import Any
 
 
 HOST = "10.10.10.111"
+
+# HOST = "0.0.0.0"
 
 
 async def main() -> None:
@@ -18,7 +20,7 @@ async def main() -> None:
         response = await notifier.async_connect()
         print(response)
     except ConnectError:
-        return
+        print("Connect Error")
 
     print("======================")
     # Send a basic notification with message only
@@ -66,7 +68,7 @@ async def main() -> None:
     #     appTitle="PyTest",
     #     appIcon="mdi:unicorn",
     #     color="#FFC107",
-    #     image="D:\\Pictures\\codeproject.png",
+    #     image="test.png",
     #     smallIcon="mdi:bell",
     #     largeIcon="mdi:home-assistant",
     #     corner=Positions.BOTTOM_LEFT,
@@ -76,21 +78,21 @@ async def main() -> None:
     # print(response)
 
 
-    response = await notifier.async_send(
-        message="This is a notification message",
-        title="Notification Title",
-        id="0",
-        appTitle="PyTest",
-        appIcon="mdi:unicorn",
-        color="#FFC107",
-        image="mdi:home-assistant",
-        smallIcon="mdi:bell",
-        largeIcon="mdi:home-assistant",
-        corner=Positions.BOTTOM_LEFT,
-        seconds=30,
-    )
+    # response = await notifier.async_send(
+    #     message="This is a notification message",
+    #     title="Notification Title",
+    #     id="0",
+    #     appTitle="PyTest",
+    #     appIcon="mdi:unicorn",
+    #     color="#FFC107",
+    #     image="mdi:home-assistant",
+    #     smallIcon="mdi:bell",
+    #     largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT,
+    #     seconds=30,
+    # )
 
-    print(response)
+    # print(response)
 
     # response = await notifier.async_send_fixed(
     #     message="This is a notification message",
