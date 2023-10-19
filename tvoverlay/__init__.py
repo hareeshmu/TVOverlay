@@ -143,7 +143,7 @@ class Notifications:
                 f"Error sending notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
-            _LOGGER.debug("TVOverlay send message response: %s", response.json())
+            _LOGGER.debug("TVOverlay send notification response: %s", response.json())
             return response.json()
         else:
             raise InvalidResponse(f"Error sending notification: {response}")
@@ -151,14 +151,14 @@ class Notifications:
     async def async_send_fixed(
         self,
         message: str,
-        id: str | None = None,
-        icon: str | None = DEFAULT_APP_ICON,
-        textColor: str | None = "#FFFFFF",
-        iconColor: str | None = "#FFFFFF",
-        borderColor: str | None = "#FFFFFF",
-        backgroundColor: str | None = "#000000",
-        shape: Shapes = Shapes.CIRCLE,
-        expiration: str | None = "5s",
+        id: str | None = str(uuid.uuid1()),
+        icon: str | None = None, # DEFAULT_APP_ICON,
+        textColor: str | None = None, # "#FFFFFF",
+        iconColor: str | None = None, # "#FFFFFF",
+        borderColor: str | None = None, # "#FFFFFF",
+        backgroundColor: str | None = None, # "#000000",
+        shape: str = Shapes.CIRCLE.value,
+        expiration: str | None = "5",
         visible: bool | None = True,
     ) -> str:
         """Send Fixed notification.
@@ -190,15 +190,20 @@ class Notifications:
                 visible: true
             )
         """
+        if icon:
+            appIcon_b64 = await self._async_get_b64_image(icon)
+        else:
+            appIcon_b64 = None
+
         data: dict[str, Any] = {
-            "message": message,
             "id": id,
+            "message": message,
             "textColor": textColor,
-            "icon": icon,
+            "icon": appIcon_b64,
             "iconColor": iconColor,
             "borderColor": borderColor,
             "backgroundColor": backgroundColor,
-            "shape": shape.value,
+            "shape": shape,
             "expiration": expiration,
             "visible": visible,
         }
@@ -210,7 +215,6 @@ class Notifications:
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
         )
-
         try:
             async with httpx_client as client:
                 response = await client.post(
@@ -221,6 +225,7 @@ class Notifications:
                 f"Error sending fixed notification to {self.url}: {err}"
             ) from err
         if response.status_code == httpx.codes.OK:
+            _LOGGER.debug("TVOverlay send fixed notification response: %s", response.json())
             return response.json()
         else:
             raise InvalidResponse(f"Error sending fixed notification: {response}")

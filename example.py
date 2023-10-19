@@ -3,11 +3,14 @@ import asyncio
 
 from tvoverlay import ConnectError, Notifications
 
+# from tvoverlay.const import Positions, Shapes, DEFAULT_APP_ICON
 
 # from typing import Any
 
 
-HOST = "10.10.10.113"
+# HOST = "10.10.10.113"
+
+HOST = "10.10.10.111"
 
 # HOST = "0.0.0.0"
 
@@ -29,11 +32,11 @@ async def main() -> None:
     except ConnectError:
         print("Connect Error")
 
-    print("======================")
-    # Send a basic notification with message only
-    print(await notifier.async_send("This is a notification message"))
+    # print("======================")
+    # # Send a basic notification with message only
+    # print(await notifier.async_send("This is a notification message"))
 
-    print("======================")
+    # print("======================")
 
     # Customize all paramters in the notification
     # response = await notifier.async_send(
@@ -118,15 +121,46 @@ async def main() -> None:
     # print(response)
 
     # response = await notifier.async_send_fixed(
-    #     message="This is a notification message",
+    #     message="Hello",
     #     id="0",
-    #     icon="mdi:bell",
+    #     icon="mdi:home-assistant",
     #     textColor="#FFFFFF",
     #     iconColor="#FFFFFF",
     #     borderColor="#FFFFFF",
-    #     backgroundColor="#000000",
-    #     shape=Shapes.CIRCLE,
+    #     # backgroundColor="#000000",
+    #     shape=Shapes.ROUNDED.value,
     #     expiration="120s",
+    #     visible=True,
+    # )
+
+    # print(response)
+
+
+    # response = await notifier.async_send_fixed(
+    #     message="Hello",
+    #     id="0",
+    #     icon="https://picsum.photos/200/100",
+    #     textColor="#FFFFFF",
+    #     # iconColor="#FFFFFF",
+    #     # borderColor="#FFFFFF",
+    #     # backgroundColor="#000000",
+    #     # shape=Shapes.ROUNDED.value,
+    #     # expiration="10m",
+    #     # visible=True,
+    # )
+
+    # print(response)
+
+    # response = await notifier.async_send_fixed(
+    #     message="Hello . . . . . . . . . .",
+    #     id="0",
+    #     icon="",
+    #     textColor="#FFFFFF",
+    #     # iconColor="#FF41E09A",
+    #     # borderColor="#00FFFF",
+    #     # backgroundColor="#000000",
+    #     shape=Shapes.CIRCLE.value,
+    #     expiration="10",
     #     visible=True,
     # )
 
