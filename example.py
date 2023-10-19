@@ -156,12 +156,12 @@ async def main() -> None:
     #     id="0",
     #     icon="",
     #     textColor="#FFFFFF",
-    #     # iconColor="#FF41E09A",
+    #     # iconColor="#41E09A",
     #     # borderColor="#00FFFF",
     #     # backgroundColor="#000000",
-    #     shape=Shapes.CIRCLE.value,
-    #     expiration="10",
-    #     visible=True,
+    #     shape="circle",
+    #     expiration="30",
+    #     visible=False,
     # )
 
     # print(response)
