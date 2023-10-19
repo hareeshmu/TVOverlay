@@ -26,7 +26,7 @@ from .exceptions import ConnectError, InvalidResponse, InvalidImage
 
 _LOGGER = logging.getLogger(__name__)
 
-_ALLOWED_IMAGES = ["image/gif", "image/jpeg", "image/png"]
+# _ALLOWED_IMAGES = ["image/gif", "image/jpeg", "image/png"]
 
 class Notifications:
     """Notifications class for TVOverlay."""
@@ -65,8 +65,8 @@ class Notifications:
         title: str | None = DEFAULT_TITLE,
         deviceSourceName: str | None = DEFAULT_SOURCE_NAME,
         appTitle: str | None = DEFAULT_APP_NAME,
-        appIcon: str | None = DEFAULT_APP_ICON,
-        image: ImageUrlSource | str | None = None,
+        appIcon: str | ImageUrlSource | None = None,
+        image: str | ImageUrlSource | None = None,
         smallIcon: str | None = DEFAULT_SMALL_ICON,
         smallIconColor: str | None = COLOR_GREEN,
         corner: str = Positions.TOP_RIGHT.value,
@@ -102,6 +102,11 @@ class Notifications:
                 "seconds": 20
             )
         """
+        if appIcon:
+            appIcon_b64 = await self._async_get_b64_image(appIcon)
+        else:
+            appIcon_b64 = DEFAULT_APP_ICON
+
         if image:
             image_b64 = await self._async_get_b64_image(image)
         else:
@@ -112,11 +117,10 @@ class Notifications:
             "title": title,
             "message": message,
             "deviceSourceName": deviceSourceName,
-            "appIcon": appIcon,
+            "appIcon": appIcon_b64,
             "appTitle": appTitle,
             "smallIcon": smallIcon,
             "color": smallIconColor,
-            # "largeIcon": largeIcon,
             "image": image_b64,
             "corner": corner.replace("left", "start").replace("right", "end"),
             "seconds": seconds,
@@ -223,10 +227,10 @@ class Notifications:
 
     async def _async_get_b64_image(self, image_source: ImageUrlSource | str) -> Any | bytes | None:
         """Load file from path or url."""
-        httpx_client: httpx.AsyncClient = (
-            self.httpx_client if self.httpx_client else httpx.AsyncClient()
-        )
         if isinstance(image_source, ImageUrlSource):
+            httpx_client: httpx.AsyncClient = (
+                self.httpx_client if self.httpx_client else httpx.AsyncClient()
+            )
             try:
                 async with httpx_client as client:
                     response = await client.get(
@@ -245,7 +249,7 @@ class Notifications:
                     f"Response content type is not an image: {response.headers['content-type']}"
                 )
             return await self._get_base64(response.content)
-        elif (image_source.startswith("mdi:")):
+        elif (image_source.startswith("mdi:") or image_source.startswith("http://") or image_source.startswith("https://")):
             return image_source
         else:
             try:
@@ -254,7 +258,7 @@ class Notifications:
                         image = file.read()
                     return await self._get_base64(image)
                 else:
-                    raise InvalidImage("Invalid Image")
+                    raise InvalidImage("Invalid Image: %s", image_source)
             except FileNotFoundError as err:
                 raise InvalidImage(err) from err
 

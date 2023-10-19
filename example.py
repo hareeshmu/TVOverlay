@@ -3,12 +3,11 @@ import asyncio
 
 from tvoverlay import ConnectError, Notifications
 
-# from tvoverlay.const import Positions, Shapes
 
 # from typing import Any
 
 
-HOST = "10.10.10.111"
+HOST = "10.10.10.113"
 
 # HOST = "0.0.0.0"
 
@@ -75,12 +74,28 @@ async def main() -> None:
     #     id="0",
     #     appTitle="PyTest",
     #     appIcon="mdi:unicorn",
-    #     color="#FFC107",
-    #     image="test.png",
+    #     smallIconColor="#FFC107",
+    #     image="c:\\temp\\haos.png",
     #     smallIcon="mdi:bell",
-    #     largeIcon="mdi:home-assistant",
-    #     corner=Positions.BOTTOM_LEFT,
+    #     # largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT.value,
     #     seconds=30,
+    # )
+
+    # print(response)
+
+    # response = await notifier.async_send(
+    #     message="This is a notification message",
+    #     title="Notification Title",
+    #     id="0",
+    #     appTitle="PyTest",
+    #     appIcon="c:\\temp\\haos.png",
+    #     smallIconColor="#FFC107",
+    #     image="c:\\temp\\haos.png",
+    #     smallIcon="mdi:bell",
+    #     # largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT.value,
+    #     seconds=10,
     # )
 
     # print(response)
@@ -92,11 +107,11 @@ async def main() -> None:
     #     id="0",
     #     appTitle="PyTest",
     #     appIcon="mdi:unicorn",
-    #     color="#FFC107",
+    #     smallIconColor="#FFC107",
     #     image="mdi:home-assistant",
     #     smallIcon="mdi:bell",
-    #     largeIcon="mdi:home-assistant",
-    #     corner=Positions.BOTTOM_LEFT,
+    #     # largeIcon="mdi:home-assistant",
+    #     corner=Positions.BOTTOM_LEFT.value,
     #     seconds=30,
     # )
 
