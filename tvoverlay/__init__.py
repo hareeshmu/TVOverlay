@@ -14,7 +14,6 @@ from .const import (
     DEFAULT_APP_NAME,
     COLOR_GREEN,
     DEFAULT_DURATION,
-    # DEFAULT_LARGE_ICON,
     DEFAULT_SMALL_ICON,
     DEFAULT_TITLE,
     DEFAULT_SOURCE_NAME,
@@ -26,7 +25,6 @@ from .exceptions import ConnectError, InvalidResponse, InvalidImage
 
 _LOGGER = logging.getLogger(__name__)
 
-# _ALLOWED_IMAGES = ["image/gif", "image/jpeg", "image/png"]
 
 class Notifications:
     """Notifications class for TVOverlay."""
@@ -42,7 +40,7 @@ class Notifications:
         self.httpx_client = httpx_client
         _LOGGER.debug("TVOverlay initialized")
 
-    async def async_connect(self) -> str:
+    async def async_connect(self) -> dict[str, Any]:
         """Test connecting to server."""
         httpx_client: httpx.AsyncClient = (
             self.httpx_client if self.httpx_client else httpx.AsyncClient(verify=False)
@@ -51,16 +49,17 @@ class Notifications:
             async with httpx_client as client:
                 response = await client.get(self.url + "/get", timeout=5)
         except (httpx.ConnectError, httpx.TimeoutException) as err:
+            _LOGGER.error("Connection to host '%s' failed!", self.url)
             raise ConnectError(f"Connection to host: {self.url} failed!") from err
         if response.status_code == httpx.codes.OK:
-            _LOGGER.debug("TVOverlay Connect response: %s", response.json())
+            _LOGGER.debug("TvOverlay connect response: %s", response.json())
             return response.json()
         else:
             raise InvalidResponse(f"Error connecting host: {self.url}")
 
     async def async_send(
         self,
-        message: str,
+        message: str | None,
         id: str | None = str(uuid.uuid1()),
         title: str | None = DEFAULT_TITLE,
         deviceSourceName: str | None = DEFAULT_SOURCE_NAME,
@@ -71,6 +70,7 @@ class Notifications:
         smallIconColor: str | None = COLOR_GREEN,
         corner: str = Positions.TOP_RIGHT.value,
         seconds: int | None = DEFAULT_DURATION,
+        icon_only: bool | None = False,
     ) -> str:
         """Send notification with parameters.
 
@@ -112,6 +112,9 @@ class Notifications:
         else:
             image_b64 = None
 
+        if icon_only:
+            message = None
+
         data: dict[str, Any] = {
             "id": id,
             "title": title,
@@ -150,16 +153,17 @@ class Notifications:
 
     async def async_send_fixed(
         self,
-        message: str,
+        message: str | None,
         id: str | None = str(uuid.uuid1()),
-        icon: str | None = None, # DEFAULT_APP_ICON,
-        textColor: str | None = None, # "#FFFFFF",
-        iconColor: str | None = None, # "#FFFFFF",
-        borderColor: str | None = None, # "#FFFFFF",
-        backgroundColor: str | None = None, # "#000000",
+        icon: str | None = None,
+        textColor: str | None = None,
+        iconColor: str | None = None,
+        borderColor: str | None = None,
+        backgroundColor: str | None = None,
         shape: str = Shapes.CIRCLE.value,
         expiration: str | None = "5",
         visible: bool | None = True,
+        icon_only: bool | None = False,
     ) -> str:
         """Send Fixed notification.
 
@@ -194,6 +198,9 @@ class Notifications:
             appIcon_b64 = await self._async_get_b64_image(icon)
         else:
             appIcon_b64 = None
+
+        if icon_only:
+            message = None
 
         data: dict[str, Any] = {
             "id": id,
