@@ -11,8 +11,15 @@ COLOR_GREEN: Final = "#41E09A"
 COLOR_WHITE: Final = "#FFFFFF"
 COLOR_BLACK: Final = "#000000"
 DEFAULT_SOURCE_NAME: Final = "Notify"
-DEFAULT_DURATION: Final = 5
+DEFAULT_DURATION: Final = "5"
 
+UNITS = {
+    "s": "seconds",
+    "m": "minutes",
+    "h": "hours",
+    "d": "days",
+    "w": "weeks",
+}
 
 class Positions(Enum):
     """Supported positions for the notification overlay."""

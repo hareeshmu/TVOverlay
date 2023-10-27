@@ -6,6 +6,8 @@ import uuid
 import base64
 import logging
 from typing import Any
+from datetime import timedelta
+import re
 
 import httpx
 
@@ -19,6 +21,7 @@ from .const import (
     DEFAULT_SOURCE_NAME,
     Positions,
     Shapes,
+    UNITS,
 )
 
 from .exceptions import ConnectError, InvalidResponse, InvalidImage
@@ -57,6 +60,32 @@ class Notifications:
         else:
             raise InvalidResponse(f"Error connecting host: {self.url}")
 
+    async def _convert_to_seconds(self, duration: str | Any) -> int | None:
+        """Convert string formatted duration 1w2d3h4m5s in to seconds."""
+        if not duration:
+            return None
+        if isinstance(duration, int):
+            return duration
+        duration = duration.replace(" ", "")
+        try:
+            return int(
+                timedelta(
+                    **{
+                        UNITS.get(m.group("unit").lower(), "seconds"): float(
+                            m.group("val")
+                        )
+                        for m in re.finditer(
+                            r"(?P<val>\d+(\.\d+)?)(?P<unit>[smhdw])",
+                            duration,
+                            flags=re.I,
+                        )
+                    }
+                ).total_seconds()
+            )
+        except Exception as ex:  # pylint: disable=broad-except
+            _LOGGER.warning("Invalid duration: %s. %s", duration, ex)
+            return int(DEFAULT_DURATION)
+
     async def async_send(
         self,
         message: str | None,
@@ -66,11 +95,11 @@ class Notifications:
         appTitle: str | None = DEFAULT_APP_NAME,
         appIcon: str | ImageUrlSource | None = None,
         image: str | ImageUrlSource | None = None,
+        video: str | None = None,
         smallIcon: str | None = DEFAULT_SMALL_ICON,
         smallIconColor: str | None = COLOR_GREEN,
         corner: str = Positions.TOP_RIGHT.value,
-        seconds: int | None = DEFAULT_DURATION,
-        icon_only: bool | None = False,
+        duration: str | None = DEFAULT_DURATION,
     ) -> str:
         """Send notification with parameters.
 
@@ -96,6 +125,7 @@ class Notifications:
                 "appIcon": "mdi:unicorn",
                 "color": "#FF0000",
                 "image": "https://picsum.photos/200/100",
+                "video": ""
                 "smallIcon": "mdi:bell",
                 "largeIcon": "mdi:home-assistant",
                 "corner": "bottom_left",
@@ -112,8 +142,7 @@ class Notifications:
         else:
             image_b64 = None
 
-        if icon_only:
-            message = None
+        final_duration: int = await self._convert_to_seconds(duration)
 
         data: dict[str, Any] = {
             "id": id,
@@ -125,8 +154,9 @@ class Notifications:
             "smallIcon": smallIcon,
             "color": smallIconColor,
             "image": image_b64,
+            "video": video,
             "corner": corner.replace("left", "start").replace("right", "end"),
-            "seconds": seconds,
+            "seconds": final_duration,
         }
 
         headers = {"Content-Type": "application/json"}
@@ -161,9 +191,8 @@ class Notifications:
         borderColor: str | None = None,
         backgroundColor: str | None = None,
         shape: str = Shapes.CIRCLE.value,
-        expiration: str | None = "5",
+        duration: str | None = DEFAULT_DURATION,
         visible: bool | None = True,
-        icon_only: bool | None = False,
     ) -> str:
         """Send Fixed notification.
 
@@ -199,9 +228,6 @@ class Notifications:
         else:
             appIcon_b64 = None
 
-        if icon_only:
-            message = None
-
         data: dict[str, Any] = {
             "id": id,
             "message": message,
@@ -211,7 +237,7 @@ class Notifications:
             "borderColor": borderColor,
             "backgroundColor": backgroundColor,
             "shape": shape,
-            "expiration": expiration,
+            "expiration": duration,
             "visible": visible,
         }
 
@@ -270,7 +296,7 @@ class Notifications:
                         image = file.read()
                     return await self._get_base64(image)
                 else:
-                    raise InvalidImage("Invalid Image: %s", image_source)
+                    raise InvalidImage(f"Invalid Image: {image_source}")
             except FileNotFoundError as err:
                 raise InvalidImage(err) from err
 
