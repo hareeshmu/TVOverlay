@@ -63,7 +63,7 @@ class Notifications:
     async def _convert_to_seconds(self, duration: str | Any) -> int | None:
         """Convert string formatted duration 1w2d3h4m5s in to seconds."""
         if not duration:
-            return None
+            return int(DEFAULT_DURATION)
         if isinstance(duration, int):
             return duration
         duration = duration.replace(" ", "")
@@ -99,7 +99,7 @@ class Notifications:
         smallIcon: str | None = DEFAULT_SMALL_ICON,
         smallIconColor: str | None = COLOR_GREEN,
         corner: str = Positions.TOP_RIGHT.value,
-        duration: str | None = DEFAULT_DURATION,
+        duration: str | None = None,
     ) -> str:
         """Send notification with parameters.
 
@@ -143,6 +143,8 @@ class Notifications:
             image_b64 = None
 
         final_duration: int = await self._convert_to_seconds(duration)
+        if final_duration == 0:
+            final_duration = int(DEFAULT_DURATION)
 
         data: dict[str, Any] = {
             "id": id,

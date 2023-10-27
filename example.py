@@ -1,6 +1,6 @@
 """Example scripts for sending notifications."""
 import asyncio
-
+import logging
 from tvoverlay import ConnectError, Notifications
 
 # from tvoverlay.const import Positions, Shapes, DEFAULT_APP_ICON
@@ -14,6 +14,7 @@ HOST = "10.10.10.111"
 
 # HOST = "0.0.0.0"
 
+_LOGGER = logging.getLogger(__name__)
 
 async def main() -> None:
     """Run the example script."""
@@ -32,25 +33,24 @@ async def main() -> None:
     except ConnectError:
         print("Connect Error")
 
-    # print("======================")
-    # # Send a basic notification with message only
-    # print(await notifier.async_send("This is a notification message"))
-
-    # print("======================")
+    print("======================")
+    # Send a basic notification with message only
+    print(await notifier.async_send("This is a notification message"))
+    print("======================")
 
     # Customize all paramters in the notification
     # response = await notifier.async_send(
     #     message="This is a notification message",
     #     title="Notification Title",
     #     id="0",
+    #     deviceSourceName="abc",
     #     appTitle="PyTest",
     #     appIcon="mdi:unicorn",
-    #     color="#FFC107",
     #     image="https://picsum.photos/200/100",
     #     smallIcon="mdi:bell",
-    #     largeIcon="mdi:home-assistant",
-    #     corner=Positions.BOTTOM_LEFT,
-    #     seconds=10,
+    #     smallIconColor="#FFC107",
+    #     corner=Positions.TOP_RIGHT.value,
+    #     duration=5,
     # )
 
     # print(response)
@@ -152,7 +152,7 @@ async def main() -> None:
     # print(response)
 
     # response = await notifier.async_send_fixed(
-    #     message="Hello . . . . . . . . . .",
+    #     message="Hello  . . . . . . . . .",
     #     id="0",
     #     icon="",
     #     textColor="#FFFFFF",
@@ -160,8 +160,8 @@ async def main() -> None:
     #     # borderColor="#00FFFF",
     #     # backgroundColor="#000000",
     #     shape="circle",
-    #     expiration="30",
-    #     visible=False,
+    #     duration="5s",
+    #     visible=True,
     # )
 
     # print(response)
